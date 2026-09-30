@@ -6,6 +6,8 @@
 
 **Tecnologia:** Next.js (site) · Supabase (login + banco de dados) · Vercel (hospedagem)
 
+**No ar:** <https://area-membros-mda.vercel.app>  (cada push na branch `main` publica automaticamente)
+
 ## O que já existe (estrutura)
 
 | Tela / parte | Caminho | O que faz |

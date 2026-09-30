@@ -370,3 +370,170 @@ h3 {
 .form-perfil .btn {
   justify-self: start;
 }
+
+/* ---------- produtos ---------- */
+.grade-produtos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+.produto {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.produto:hover {
+  border-color: var(--y-a30);
+  transform: translateY(-2px);
+}
+.produto-info {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+.produto-info h3 {
+  font-size: 18px;
+}
+.produto-info p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 14px;
+}
+.produto-capa {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  color: var(--y-500);
+  background:
+    radial-gradient(circle at 50% 40%, var(--y-a20), transparent 60%),
+    linear-gradient(160deg, var(--surface-3), var(--bg-2));
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.produto-capa > svg {
+  width: 30%;
+  height: auto;
+  filter: drop-shadow(0 6px 18px rgba(246, 193, 17, 0.25));
+}
+.produto-etiqueta {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--y-500);
+  color: #111;
+  font: 800 13px/1.2 var(--f-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.produto-cadeado {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(9, 9, 11, 0.8);
+  color: var(--text-2);
+}
+.produto-cadeado svg {
+  width: 16px;
+  height: 16px;
+}
+.produto-bloqueado .produto-capa > svg,
+.produto-bloqueado .produto-etiqueta {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+span.btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---------- página do produto ---------- */
+.voltar {
+  justify-self: start;
+  color: var(--text-3);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.voltar:hover {
+  color: var(--text);
+}
+.produto-topo {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) 1fr;
+  align-items: center;
+  gap: 24px;
+}
+.produto-topo h1 {
+  font-size: clamp(24px, 4vw, 34px);
+}
+.produto-topo p {
+  margin: 8px 0 0;
+  color: var(--text-3);
+}
+@media (max-width: 640px) {
+  .produto-topo {
+    grid-template-columns: 1fr;
+  }
+}
+.materiais {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.material {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.material-icone {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--y-a10);
+  color: var(--y-500);
+}
+.material-icone svg {
+  width: 22px;
+  height: 22px;
+}
+.material-info {
+  flex: 1;
+  min-width: 0;
+}
+.material-info h3 {
+  font-size: 16px;
+}
+.material-info p {
+  margin: 2px 0 0;
+  color: var(--text-3);
+  font-size: 14px;
+}
+.btn-baixar {
+  min-height: 40px;
+  padding: 0 16px;
+  flex-shrink: 0;
+}

@@ -22,13 +22,25 @@
 
 Só entra quem **já é aluno**: a tela de login não cria conta. Hoje o aluno é cadastrado à mão no Supabase; depois, o webhook da Cakto fará isso na compra.
 
+## Webhook da Cakto
+
+Endereço: `https://area-membros-mda.vercel.app/api/webhooks/cakto`
+
+| Evento | O que a área faz |
+|---|---|
+| `purchase_approved` | Cria o aluno (se for novo) e libera o produto |
+| `refund`, `chargeback` | Revoga o acesso ao produto |
+| outros | Só registra |
+
+- Cada aviso fica registrado na tabela `cakto_eventos` (coluna `resultado` diz o que aconteceu).
+- O produto é reconhecido pelo id do produto na Cakto (`produtos.cakto_produto_id`) ou, na primeira venda, pela oferta do `checkout_url` — e o id é gravado sozinho.
+- Variáveis na Vercel: `SUPABASE_SECRET_KEY` e `CAKTO_WEBHOOK_SECRET` (ver `.env.example`).
+
 ## Próximas etapas
 
-1. Produtos e acessos (tabelas `produtos` e `acessos`, cards no painel)
-2. Webhook da Cakto (compra aprovada → cria aluno e libera produto; reembolso → remove)
-3. Conteúdo do Combo (PDFs com marca d'água, simulados interativos)
-4. Aplicativos (em desenvolvimento, integração depois)
-5. Domínio próprio
+1. Domínio próprio + SMTP (Resend): e-mail de acesso com a marca e código de 6 dígitos — obrigatório antes de alunos reais
+2. Marca d'água nos PDFs, simulados interativos
+3. Aplicativos (em desenvolvimento, integração depois)
 
 ---
 

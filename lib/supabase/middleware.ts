@@ -4,7 +4,8 @@ import { SUPABASE_KEY, SUPABASE_URL } from './env'
 
 /** Rotas que qualquer pessoa pode abrir sem estar logada. */
 function ehRotaPublica(path: string) {
-  return path === '/login' || path.startsWith('/auth/')
+  // /api/webhooks/* é chamado por servidores (Cakto), que se autenticam com segredo próprio.
+  return path === '/login' || path.startsWith('/auth/') || path.startsWith('/api/webhooks/')
 }
 
 /**

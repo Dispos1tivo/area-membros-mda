@@ -27,8 +27,9 @@ type PayloadCakto = {
     id?: string
     refId?: string
     customer?: { name?: string; email?: string }
-    product?: { id?: string; name?: string }
+    product?: { id?: string; short_id?: string; name?: string }
     offer?: { id?: string }
+    checkoutUrl?: string
   }
 }
 
@@ -57,7 +58,11 @@ export async function POST(request: NextRequest) {
 
   try {
     if (LIBERAM.has(evento) || REVOGAM.has(evento)) {
-      const produtoId = await acharProduto(db, produtoCaktoId, ofertaId)
+      const produtoId = await acharProduto(db, produtoCaktoId, [
+        ofertaId,
+        dados.product?.short_id,
+        codigoDoCheckout(dados.checkoutUrl),
+      ])
 
       if (!email) {
         resultado = 'sem_email'
@@ -129,23 +134,32 @@ function nomeDoEvento(event: unknown) {
 /**
  * Descobre qual produto da área corresponde ao da Cakto:
  * 1) pelo id do produto na Cakto (coluna cakto_produto_id);
- * 2) senão, pela oferta que aparece no link de checkout cadastrado
- *    (ex.: pay.cakto.com.br/e5ah5n8_1006158 → oferta "e5ah5n8") — e aí
- *    já grava o id do produto, para as próximas vendas caírem no caso 1.
+ * 2) senão, pelo código que aparece no link de checkout cadastrado
+ *    (ex.: pay.cakto.com.br/e5ah5n8_1006158 → "e5ah5n8"), comparado com a
+ *    oferta, o código curto do produto e o checkoutUrl do aviso — e aí já
+ *    grava o id do produto, para as próximas vendas caírem no caso 1.
  */
-async function acharProduto(db: SupabaseClient, produtoCaktoId: string | null, ofertaId: string | null) {
+async function acharProduto(
+  db: SupabaseClient,
+  produtoCaktoId: string | null,
+  codigos: (string | null | undefined)[],
+) {
   if (produtoCaktoId) {
     const { data } = await db.from('produtos').select('id').eq('cakto_produto_id', produtoCaktoId).maybeSingle()
     if (data) return data.id as string
   }
 
-  if (ofertaId) {
+  const candidatos = new Set(codigos.filter((c): c is string => !!c).map((c) => c.toLowerCase()))
+  if (candidatos.size > 0) {
     const { data } = await db
       .from('produtos')
       .select('id, checkout_url')
       .is('cakto_produto_id', null)
       .not('checkout_url', 'is', null)
-    const achado = data?.find((p) => ofertaDoCheckout(p.checkout_url) === ofertaId)
+    const achado = data?.find((p) => {
+      const codigo = codigoDoCheckout(p.checkout_url)
+      return !!codigo && candidatos.has(codigo)
+    })
     if (achado) {
       if (produtoCaktoId) await db.from('produtos').update({ cakto_produto_id: produtoCaktoId }).eq('id', achado.id)
       return achado.id as string
@@ -155,10 +169,12 @@ async function acharProduto(db: SupabaseClient, produtoCaktoId: string | null, o
   return null
 }
 
-function ofertaDoCheckout(url: string) {
+/** "https://pay.cakto.com.br/e5ah5n8_1006158" → "e5ah5n8" */
+function codigoDoCheckout(url: string | null | undefined) {
+  if (!url) return null
   try {
     const ultimo = new URL(url).pathname.split('/').filter(Boolean).pop()
-    return ultimo?.split('_')[0] ?? null
+    return ultimo?.split('_')[0]?.toLowerCase() || null
   } catch {
     return null
   }

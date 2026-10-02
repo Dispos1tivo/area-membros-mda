@@ -44,7 +44,7 @@ export function FormLogin({ next, erroInicial }: { next: string; erroInicial?: s
       return
     }
     setEtapa('codigo')
-    setInfo(`Enviamos um link e um código de acesso para ${email.trim().toLowerCase()}.`)
+    setInfo(`Enviamos um link e um código de acesso para ${email.trim().toLowerCase()}. Não achou? Olhe também no spam ou lixo eletrônico.`)
   }
 
   async function confirmarCodigo(e: FormEvent) {

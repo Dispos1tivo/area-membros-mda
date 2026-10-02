@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { createClient } from '@/lib/supabase/server'
 
 export type Produto = {
@@ -36,44 +37,38 @@ export async function getProdutosDoAluno(alunoId: string): Promise<ProdutoDoAlun
     .sort((a, b) => Number(b.liberado) - Number(a.liberado))
 }
 
-/** Um produto pelo slug + se o aluno tem acesso a ele. */
-export async function getProdutoDoAluno(slug: string, alunoId: string): Promise<ProdutoDoAluno | null> {
-  const supabase = await createClient()
+export type ProdutoComMateriais = ProdutoDoAluno & { secoes: { secao: string; itens: Material[] }[] }
 
-  const { data: produto } = await supabase
-    .from('produtos')
-    .select(CAMPOS_PRODUTO)
-    .eq('slug', slug)
-    .maybeSingle<Produto>()
+type LinhaProduto = Produto & { acessos: { revogado_em: string | null }[]; materiais: Material[] }
 
-  if (!produto) return null
-
-  const { data: acesso } = await supabase
-    .from('acessos')
-    .select('produto_id')
-    .eq('aluno_id', alunoId)
-    .eq('produto_id', produto.id)
-    .is('revogado_em', null)
-    .maybeSingle()
-
-  return { ...produto, liberado: !!acesso }
-}
-
-/** Materiais do produto agrupados por seção (a segurança do banco só devolve se o aluno tiver acesso). */
-export async function getMateriaisPorSecao(produtoId: string) {
+/**
+ * Um produto pelo slug + se o aluno tem acesso + materiais agrupados por seção, em uma consulta só.
+ * A segurança do banco só devolve os acessos do próprio aluno e os materiais dos produtos liberados.
+ * Com cache(): o título da aba e a página compartilham a mesma consulta na requisição.
+ */
+export const getProdutoComMateriais = cache(async (slug: string): Promise<ProdutoComMateriais | null> => {
   const supabase = await createClient()
 
   const { data } = await supabase
-    .from('materiais')
-    .select('id, secao, titulo, descricao')
-    .eq('produto_id', produtoId)
-    .order('ordem')
-    .returns<Material[]>()
+    .from('produtos')
+    .select(`${CAMPOS_PRODUTO}, acessos(revogado_em), materiais(id, secao, titulo, descricao)`)
+    .eq('slug', slug)
+    .order('ordem', { referencedTable: 'materiais' })
+    .maybeSingle<LinhaProduto>()
+
+  if (!data) return null
+
+  const { acessos, materiais, ...produto } = data
 
   const secoes = new Map<string, Material[]>()
-  for (const m of data ?? []) {
+  for (const m of materiais) {
     if (!secoes.has(m.secao)) secoes.set(m.secao, [])
     secoes.get(m.secao)!.push(m)
   }
-  return [...secoes.entries()].map(([secao, itens]) => ({ secao, itens }))
-}
+
+  return {
+    ...produto,
+    liberado: acessos.some((a) => a.revogado_em === null),
+    secoes: [...secoes.entries()].map(([secao, itens]) => ({ secao, itens })),
+  }
+})

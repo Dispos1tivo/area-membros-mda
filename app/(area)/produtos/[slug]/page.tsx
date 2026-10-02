@@ -2,26 +2,23 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CapaProduto } from '@/components/CapaProduto'
-import { getAluno } from '@/lib/aluno'
-import { getMateriaisPorSecao, getProdutoDoAluno } from '@/lib/produtos'
+import { getProdutoComMateriais } from '@/lib/produtos'
 
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const aluno = await getAluno()
-  const produto = await getProdutoDoAluno(slug, aluno.id)
+  const produto = await getProdutoComMateriais(slug)
   return { title: produto?.nome ?? 'Produto' }
 }
 
 export default async function PaginaProduto({ params }: Props) {
   const { slug } = await params
-  const aluno = await getAluno()
-  const produto = await getProdutoDoAluno(slug, aluno.id)
+  const produto = await getProdutoComMateriais(slug)
 
   if (!produto) notFound()
 
-  const secoes = produto.liberado ? await getMateriaisPorSecao(produto.id) : []
+  const secoes = produto.liberado ? produto.secoes : []
 
   return (
     <>

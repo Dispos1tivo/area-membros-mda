@@ -10,10 +10,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const { id } = await params
   const supabase = await createClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return NextResponse.redirect(new URL('/login', request.url))
+  const { data } = await supabase.auth.getClaims()
+  if (!data?.claims) return NextResponse.redirect(new URL('/login', request.url))
 
   const { data: material } = await supabase.from('materiais').select('arquivo').eq('id', id).maybeSingle()
   if (!material) {

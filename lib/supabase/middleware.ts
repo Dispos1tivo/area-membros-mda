@@ -29,11 +29,11 @@ export async function updateSession(request: NextRequest) {
     },
   })
 
-  // Não coloque código entre createServerClient e getUser():
-  // é o getUser() que valida e renova a sessão.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Não coloque código entre createServerClient e getClaims():
+  // é o getClaims() que valida e renova a sessão.
+  // (Confere a assinatura do token aqui mesmo, sem ir ao servidor de login a cada clique.)
+  const { data } = await supabase.auth.getClaims()
+  const user = data?.claims
 
   const path = request.nextUrl.pathname
 

@@ -10,15 +10,13 @@ export async function salvarNome(formData: FormData) {
     .slice(0, 80)
 
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { data } = await supabase.auth.getClaims()
+  if (!data?.claims) redirect('/login')
 
   const { error } = await supabase
     .from('perfis')
     .update({ nome: nome || null })
-    .eq('id', user.id)
+    .eq('id', data.claims.sub)
 
   revalidatePath('/', 'layout')
   redirect(error ? '/perfil?status=erro' : '/perfil?status=salvo')

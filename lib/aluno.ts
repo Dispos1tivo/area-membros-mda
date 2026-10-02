@@ -14,15 +14,14 @@ export type Aluno = {
  */
 export const getAluno = cache(async (): Promise<Aluno> => {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data } = await supabase.auth.getClaims()
+  const claims = data?.claims
 
-  if (!user) redirect('/login')
+  if (!claims) redirect('/login')
 
-  const { data: perfil } = await supabase.from('perfis').select('nome').eq('id', user.id).maybeSingle()
+  const { data: perfil } = await supabase.from('perfis').select('nome').eq('id', claims.sub).maybeSingle()
 
-  return { id: user.id, email: user.email ?? '', nome: perfil?.nome ?? null }
+  return { id: claims.sub, email: (claims.email as string | undefined) ?? '', nome: perfil?.nome ?? null }
 })
 
 export function primeiroNome(aluno: Aluno) {

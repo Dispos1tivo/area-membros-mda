@@ -18,7 +18,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return new NextResponse('Material não encontrado ou sem acesso.', { status: 404 })
   }
 
-  const { data: link, error } = await supabase.storage.from('materiais').createSignedUrl(material.arquivo, 60 * 5)
+  // Junto com o link, registra a abertura ("continuar de onde parou" e "já aberto").
+  // Se o registro falhar, o aluno abre o material do mesmo jeito.
+  const [{ data: link, error }] = await Promise.all([
+    supabase.storage.from('materiais').createSignedUrl(material.arquivo, 60 * 5),
+    supabase.from('materiais_abertos').upsert({ aluno_id: data.claims.sub, material_id: id, aberto_em: new Date().toISOString() }),
+  ])
   if (error || !link) {
     return new NextResponse('Não foi possível abrir o material agora. Tente novamente em instantes.', { status: 500 })
   }

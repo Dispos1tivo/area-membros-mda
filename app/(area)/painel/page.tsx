@@ -1,14 +1,20 @@
 import type { Metadata } from 'next'
-import { CardProduto } from '@/components/CardProduto'
+import Link from 'next/link'
+import { PainelProdutos } from '@/components/PainelProdutos'
 import { getAluno, primeiroNome } from '@/lib/aluno'
-import { getProdutosDoAluno } from '@/lib/produtos'
+import { getConcursos } from '@/lib/concursos'
+import { getProdutosDoAluno, getUltimoAberto } from '@/lib/produtos'
+import { dataBR, proximaProva, textoFaltam } from '@/lib/prova'
 
 export const metadata: Metadata = { title: 'Meus produtos' }
 
 export default async function Painel() {
   const aluno = await getAluno()
   const nome = primeiroNome(aluno)
-  const produtos = await getProdutosDoAluno(aluno.id)
+  const [produtos, ultimo, concursos] = await Promise.all([getProdutosDoAluno(aluno.id), getUltimoAberto(aluno.id), getConcursos()])
+
+  const meus = produtos.filter((p) => p.liberado)
+  const prova = proximaProva(meus)
 
   return (
     <>
@@ -17,29 +23,45 @@ export default async function Painel() {
         <p>Aqui ficam todos os seus materiais do Método da Aprovação.</p>
       </section>
 
-      <section className="secao" aria-labelledby="titulo-produtos">
-        <h2 id="titulo-produtos" className="secao-titulo">
-          Meus produtos
-        </h2>
+      {meus.length > 0 && (
+        <section className={`inicio${prova ? '' : ' inicio-so'}`} aria-label="Seu estudo">
+          {ultimo ? (
+            <div className="continuar">
+              <div className="continuar-info">
+                <span className="rotulo">Continuar de onde parou</span>
+                <h2>{ultimo.titulo}</h2>
+                <p>
+                  {ultimo.secao} · <Link href={`/produtos/${ultimo.produto.slug}`}>{ultimo.produto.nome}</Link>
+                </p>
+              </div>
+              <a href={`/materiais/${ultimo.id}`} className="btn btn-ouro" target="_blank" rel="noopener">
+                Continuar
+              </a>
+            </div>
+          ) : (
+            <div className="continuar">
+              <div className="continuar-info">
+                <span className="rotulo">Comece por aqui</span>
+                <h2>{meus[0].nome}</h2>
+                <p>Abra o primeiro material e ele fica guardado aqui para você continuar depois.</p>
+              </div>
+              <Link href={`/produtos/${meus[0].slug}`} className="btn btn-ouro">
+                Começar
+              </Link>
+            </div>
+          )}
 
-        {produtos.length > 0 ? (
-          <div className="grade-produtos">
-            {produtos.map((p) => (
-              <CardProduto key={p.id} produto={p} />
-            ))}
-          </div>
-        ) : (
-          <div className="vazio">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M21 8 12 3 3 8l9 5 9-5Z" />
-              <path d="M3 8v8l9 5 9-5V8" />
-              <path d="M12 13v8" />
-            </svg>
-            <h3>Seus produtos vão aparecer aqui</h3>
-            <p>Assim que sua compra for confirmada, os materiais são liberados automaticamente nesta página.</p>
-          </div>
-        )}
-      </section>
+          {prova && (
+            <div className="contagem">
+              <span className="rotulo">Prova da {prova.concurso}</span>
+              <strong>{textoFaltam(prova.dias)}</strong>
+              <span className="contagem-data">{dataBR(prova.data)}</span>
+            </div>
+          )}
+        </section>
+      )}
+
+      <PainelProdutos produtos={produtos} concursos={concursos} />
     </>
   )
 }

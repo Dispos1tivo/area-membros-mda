@@ -1,12 +1,24 @@
 import type { Metadata } from 'next'
 import { getAluno } from '@/lib/aluno'
-import { salvarNome } from './actions'
+import { salvarNome, salvarSenha } from './actions'
 
 export const metadata: Metadata = { title: 'Minha conta' }
 
-export default async function Perfil({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+const AVISOS_SENHA: Record<string, { ok: boolean; texto: string }> = {
+  salva: { ok: true, texto: 'Senha salva. No próximo acesso, você já pode entrar com e-mail e senha.' },
+  criar: { ok: true, texto: 'Você entrou com o código. Agora crie sua senha abaixo.' },
+  tamanho: { ok: false, texto: 'A senha precisa ter entre 8 e 72 caracteres.' },
+  diferente: { ok: false, texto: 'As duas senhas não são iguais. Digite de novo.' },
+  igual: { ok: false, texto: 'A nova senha precisa ser diferente da atual.' },
+  fraca: { ok: false, texto: 'Essa senha é fraca demais. Tente uma mais longa, misturando letras e números.' },
+  reentrar: { ok: false, texto: 'Por segurança, saia e entre de novo com o código por e-mail antes de trocar a senha.' },
+  erro: { ok: false, texto: 'Não foi possível salvar a senha. Tente novamente.' },
+}
+
+export default async function Perfil({ searchParams }: { searchParams: Promise<{ status?: string; senha?: string }> }) {
   const aluno = await getAluno()
-  const { status } = await searchParams
+  const { status, senha } = await searchParams
+  const avisoSenha = senha ? AVISOS_SENHA[senha] : undefined
 
   return (
     <>
@@ -31,6 +43,55 @@ export default async function Perfil({ searchParams }: { searchParams: Promise<{
           </div>
 
           <button className="btn btn-ouro">Salvar</button>
+        </form>
+      </section>
+
+      <section className="card" id="senha">
+        <form action={salvarSenha} className="form-perfil">
+          <div>
+            <h2 className="card-titulo">{aluno.temSenha ? 'Trocar senha' : 'Criar senha'}</h2>
+            <p className="card-sub">
+              {aluno.temSenha
+                ? 'Sua conta já tem senha. Para trocar, digite a nova abaixo.'
+                : 'Com uma senha, você entra direto com e-mail e senha, sem esperar o código chegar no e-mail.'}
+            </p>
+          </div>
+
+          {avisoSenha && <p className={`aviso ${avisoSenha.ok ? 'aviso-ok' : 'aviso-erro'}`}>{avisoSenha.texto}</p>}
+
+          {/* Ajuda o gerenciador de senhas do navegador a guardar a senha junto com o e-mail certo. */}
+          <input type="email" name="username" autoComplete="username" value={aluno.email} readOnly hidden />
+
+          <div className="campo">
+            <label htmlFor="senha-nova">Nova senha</label>
+            <input
+              id="senha-nova"
+              name="senha"
+              type="password"
+              className="input"
+              autoComplete="new-password"
+              minLength={8}
+              maxLength={72}
+              required
+              placeholder="Mínimo de 8 caracteres"
+            />
+          </div>
+
+          <div className="campo">
+            <label htmlFor="senha-confirmacao">Repita a nova senha</label>
+            <input
+              id="senha-confirmacao"
+              name="confirmacao"
+              type="password"
+              className="input"
+              autoComplete="new-password"
+              minLength={8}
+              maxLength={72}
+              required
+            />
+          </div>
+
+          <button className="btn btn-ouro">{aluno.temSenha ? 'Trocar senha' : 'Criar senha'}</button>
         </form>
       </section>
     </>

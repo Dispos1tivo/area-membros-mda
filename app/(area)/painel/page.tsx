@@ -23,6 +23,17 @@ export default async function Painel() {
         <p>Aqui ficam todos os seus materiais do Método da Aprovação.</p>
       </section>
 
+      {!aluno.temSenha && (
+        <aside className="lembrete">
+          <p>
+            <strong>Crie uma senha</strong> e entre direto, sem esperar o código chegar no e-mail.
+          </p>
+          <Link href="/perfil#senha" className="btn btn-contorno">
+            Criar senha
+          </Link>
+        </aside>
+      )}
+
       {meus.length > 0 && (
         <section className={`inicio${prova ? '' : ' inicio-so'}`} aria-label="Seu estudo">
           {ultimo ? (

@@ -1,50 +1,84 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-type Etapa = 'email' | 'codigo'
+type Etapa = 'entrar' | 'codigo'
+
+/** Para onde vai quem entra pelo código porque ainda não tem (ou esqueceu) a senha. */
+const CRIAR_SENHA = '/perfil?senha=criar#senha'
 
 /**
- * Login sem senha em 2 passos:
- * 1) aluno informa o e-mail da compra → recebe e-mail com link + código
- * 2) clica no link (vai para /auth/confirm) OU digita o código aqui
- * O código resolve quem abre o e-mail em outro aparelho ou no navegador do Instagram.
+ * Duas formas de entrar, na mesma tela:
+ * - e-mail + senha (a senha é criada em Minha conta);
+ * - código por e-mail: o aluno recebe link + código, clica no link (vai para
+ *   /auth/confirm) OU digita o código aqui. É o caminho do primeiro acesso e de
+ *   quem esqueceu a senha, e resolve quem abre o e-mail em outro aparelho.
  */
 export function FormLogin({ next, erroInicial }: { next: string; erroInicial?: string }) {
   const router = useRouter()
-  const [etapa, setEtapa] = useState<Etapa>('email')
+  const campoEmail = useRef<HTMLInputElement>(null)
+  const [etapa, setEtapa] = useState<Etapa>('entrar')
   const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [mostrarSenha, setMostrarSenha] = useState(false)
   const [codigo, setCodigo] = useState('')
+  const [destino, setDestino] = useState(next)
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState(erroInicial ?? '')
   const [info, setInfo] = useState('')
 
-  async function enviarAcesso(e?: FormEvent) {
-    e?.preventDefault()
+  const emailLimpo = email.trim().toLowerCase()
+
+  async function entrarComSenha(e: FormEvent) {
+    e.preventDefault()
+    if (!senha) {
+      setErro('Digite sua senha ou, se ainda não tem uma, entre com o código por e-mail.')
+      return
+    }
+    setCarregando(true)
+    setErro('')
+
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithPassword({ email: emailLimpo, password: senha })
+
+    if (error) {
+      setCarregando(false)
+      setErro(traduzirErro(error.message, error.status, 'senha'))
+      return
+    }
+    router.replace(next)
+    router.refresh()
+  }
+
+  async function enviarCodigo(destinoAposEntrar: string) {
+    // O botão do código não envia o formulário, então confere o e-mail aqui.
+    if (!campoEmail.current?.reportValidity()) return
+
     setCarregando(true)
     setErro('')
     setInfo('')
+    setDestino(destinoAposEntrar)
 
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim().toLowerCase(),
+      email: emailLimpo,
       options: {
         // Só entra quem já é aluno (a conta é criada na compra, não aqui).
         shouldCreateUser: false,
-        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(next)}`,
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(destinoAposEntrar)}`,
       },
     })
 
     setCarregando(false)
 
     if (error) {
-      setErro(traduzirErro(error.message, error.status))
+      setErro(traduzirErro(error.message, error.status, 'codigo'))
       return
     }
     setEtapa('codigo')
-    setInfo(`Enviamos um link e um código de acesso para ${email.trim().toLowerCase()}. Não achou? Olhe também no spam ou lixo eletrônico.`)
+    setInfo(`Enviamos um link e um código de acesso para ${emailLimpo}. Não achou? Olhe também no spam ou lixo eletrônico.`)
   }
 
   async function confirmarCodigo(e: FormEvent) {
@@ -54,7 +88,7 @@ export function FormLogin({ next, erroInicial }: { next: string; erroInicial?: s
 
     const supabase = createClient()
     const { error } = await supabase.auth.verifyOtp({
-      email: email.trim().toLowerCase(),
+      email: emailLimpo,
       token: codigo.trim(),
       type: 'email',
     })
@@ -64,7 +98,7 @@ export function FormLogin({ next, erroInicial }: { next: string; erroInicial?: s
       setErro('Código inválido ou expirado. Confira o e-mail ou peça um novo código.')
       return
     }
-    router.replace(next)
+    router.replace(destino)
     router.refresh()
   }
 
@@ -96,20 +130,20 @@ export function FormLogin({ next, erroInicial }: { next: string; erroInicial?: s
           {carregando ? 'Entrando…' : 'Entrar'}
         </button>
         <div className="login-acoes">
-          <button type="button" className="link-btn" onClick={() => enviarAcesso()} disabled={carregando}>
+          <button type="button" className="link-btn" onClick={() => enviarCodigo(destino)} disabled={carregando}>
             Reenviar código
           </button>
           <button
             type="button"
             className="link-btn"
             onClick={() => {
-              setEtapa('email')
+              setEtapa('entrar')
               setCodigo('')
               setErro('')
               setInfo('')
             }}
           >
-            Trocar e-mail
+            Voltar
           </button>
         </div>
       </form>
@@ -117,7 +151,7 @@ export function FormLogin({ next, erroInicial }: { next: string; erroInicial?: s
   }
 
   return (
-    <form onSubmit={enviarAcesso}>
+    <form onSubmit={entrarComSenha}>
       <div>
         <h1 className="login-titulo">Área de Membros</h1>
         <p className="login-sub">Entre com o mesmo e-mail que você usou na compra.</p>
@@ -126,10 +160,11 @@ export function FormLogin({ next, erroInicial }: { next: string; erroInicial?: s
       <div className="campo">
         <label htmlFor="email">Seu e-mail</label>
         <input
+          ref={campoEmail}
           id="email"
           type="email"
           className="input"
-          autoComplete="email"
+          autoComplete="username"
           placeholder="voce@email.com"
           required
           autoFocus
@@ -137,15 +172,47 @@ export function FormLogin({ next, erroInicial }: { next: string; erroInicial?: s
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
+      <div className="campo">
+        <div className="campo-topo">
+          <label htmlFor="senha">Sua senha</label>
+          <button type="button" className="link-btn" onClick={() => setMostrarSenha((v) => !v)} aria-pressed={mostrarSenha}>
+            {mostrarSenha ? 'Ocultar' : 'Mostrar'}
+          </button>
+        </div>
+        <input
+          id="senha"
+          type={mostrarSenha ? 'text' : 'password'}
+          className="input"
+          autoComplete="current-password"
+          maxLength={72}
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+        />
+      </div>
       <button className="btn btn-ouro btn-bloco" disabled={carregando}>
-        {carregando ? 'Enviando…' : 'Receber acesso por e-mail'}
+        {carregando ? 'Aguarde…' : 'Entrar'}
       </button>
+      <button type="button" className="link-btn" onClick={() => enviarCodigo(CRIAR_SENHA)} disabled={carregando}>
+        Esqueci minha senha
+      </button>
+
+      <p className="login-ou">ou</p>
+
+      <button type="button" className="btn btn-ghost btn-bloco" onClick={() => enviarCodigo(next)} disabled={carregando}>
+        Entrar com código por e-mail
+      </button>
+      <p className="login-dica">
+        <strong>Primeiro acesso?</strong> Entre com o código por e-mail e depois crie sua senha em Minha conta.
+      </p>
     </form>
   )
 }
 
-function traduzirErro(mensagem: string, status?: number) {
+function traduzirErro(mensagem: string, status: number | undefined, modo: 'senha' | 'codigo') {
   const m = mensagem.toLowerCase()
+  if (m.includes('invalid login credentials')) {
+    return 'E-mail ou senha incorretos. Se ainda não criou uma senha, entre com o código por e-mail.'
+  }
   if (m.includes('signups not allowed') || m.includes('user not found')) {
     return 'Não encontramos uma compra com esse e-mail. Use o mesmo e-mail que você informou no pagamento.'
   }
@@ -155,5 +222,7 @@ function traduzirErro(mensagem: string, status?: number) {
   if (m.includes('invalid') && m.includes('email')) {
     return 'Esse e-mail parece inválido. Confira e tente de novo.'
   }
-  return 'Não foi possível enviar o acesso agora. Tente novamente em instantes.'
+  return modo === 'senha'
+    ? 'Não foi possível entrar agora. Tente novamente em instantes.'
+    : 'Não foi possível enviar o acesso agora. Tente novamente em instantes.'
 }

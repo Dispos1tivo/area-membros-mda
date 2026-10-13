@@ -929,3 +929,67 @@ img.capa-escudo {
     transform: rotate(360deg);
   }
 }
+
+/* ---------- senha (login, Minha conta e lembrete do painel) ---------- */
+.campo-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.login-ou {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--text-4);
+  font-size: 13px;
+}
+.login-ou::before,
+.login-ou::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line-2);
+}
+.login-dica {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 13px;
+}
+.login-dica strong {
+  color: var(--text-2);
+}
+.card-titulo {
+  font-size: 20px;
+}
+.card-sub {
+  margin: 6px 0 0;
+  color: var(--text-3);
+  font-size: 15px;
+}
+.lembrete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 14px 18px;
+  border: 1px solid var(--y-a30);
+  border-radius: var(--radius);
+  background: var(--y-a10);
+}
+.lembrete p {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 15px;
+}
+.lembrete strong {
+  color: var(--text);
+}
+.lembrete .btn {
+  min-height: 40px;
+}
+#senha {
+  scroll-margin-top: 88px;
+}

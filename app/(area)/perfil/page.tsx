@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'Minha conta' }
 
 const AVISOS_SENHA: Record<string, { ok: boolean; texto: string }> = {
   salva: { ok: true, texto: 'Senha salva. No próximo acesso, você já pode entrar com e-mail e senha.' },
-  criar: { ok: true, texto: 'Você entrou com o código. Agora crie sua senha abaixo.' },
+  criar: { ok: true, texto: 'Você entrou com o código. Agora defina sua senha abaixo.' },
   tamanho: { ok: false, texto: 'A senha precisa ter entre 8 e 72 caracteres.' },
   diferente: { ok: false, texto: 'As duas senhas não são iguais. Digite de novo.' },
   igual: { ok: false, texto: 'A nova senha precisa ser diferente da atual.' },
@@ -19,6 +19,7 @@ export default async function Perfil({ searchParams }: { searchParams: Promise<{
   const aluno = await getAluno()
   const { status, senha } = await searchParams
   const avisoSenha = senha ? AVISOS_SENHA[senha] : undefined
+  const trocar = aluno.temSenha || aluno.comSenhaInicial
 
   return (
     <>
@@ -49,11 +50,13 @@ export default async function Perfil({ searchParams }: { searchParams: Promise<{
       <section className="card" id="senha">
         <form action={salvarSenha} className="form-perfil">
           <div>
-            <h2 className="card-titulo">{aluno.temSenha ? 'Trocar senha' : 'Criar senha'}</h2>
+            <h2 className="card-titulo">{trocar ? 'Trocar senha' : 'Criar senha'}</h2>
             <p className="card-sub">
               {aluno.temSenha
                 ? 'Sua conta já tem senha. Para trocar, digite a nova abaixo.'
-                : 'Com uma senha, você entra direto com e-mail e senha, sem esperar o código chegar no e-mail.'}
+                : aluno.comSenhaInicial
+                  ? 'Sua senha atual é a inicial: o CPF usado na compra. Troque por uma que só você conheça.'
+                  : 'Com uma senha, você entra direto com e-mail e senha, sem esperar o código chegar no e-mail.'}
             </p>
           </div>
 
@@ -91,7 +94,7 @@ export default async function Perfil({ searchParams }: { searchParams: Promise<{
             />
           </div>
 
-          <button className="btn btn-ouro">{aluno.temSenha ? 'Trocar senha' : 'Criar senha'}</button>
+          <button className="btn btn-ouro">{trocar ? 'Trocar senha' : 'Criar senha'}</button>
         </form>
       </section>
     </>

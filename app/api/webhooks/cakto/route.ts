@@ -6,7 +6,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 /**
  * Webhook da Cakto (https://docs.cakto.com.br/conceitos/webhooks)
  *
- * - purchase_approved  → cria o aluno (se for novo) e libera o produto
+ * - purchase_approved  → cria o aluno (se for novo) e libera o produto.
+ *                        O aluno novo já nasce com uma senha inicial: o CPF
+ *                        (ou CNPJ) da compra, só os números. Assim ele entra
+ *                        mesmo que o e-mail de acesso não chegue.
  * - refund / chargeback → revoga o acesso ao produto
  * - demais eventos      → só registra
  *
@@ -26,7 +29,7 @@ type PayloadCakto = {
   data?: {
     id?: string
     refId?: string
-    customer?: { name?: string; email?: string }
+    customer?: { name?: string; email?: string; docNumber?: string }
     product?: { id?: string; short_id?: string; name?: string }
     offer?: { id?: string }
     checkoutUrl?: string
@@ -69,7 +72,7 @@ export async function POST(request: NextRequest) {
       } else if (!produtoId) {
         resultado = 'produto_desconhecido'
       } else if (LIBERAM.has(evento)) {
-        const alunoId = await acharOuCriarAluno(db, email, dados.customer?.name)
+        const alunoId = await acharOuCriarAluno(db, email, dados.customer?.name, dados.customer?.docNumber)
         const { error } = await db.from('acessos').upsert({
           aluno_id: alunoId,
           produto_id: produtoId,
@@ -185,21 +188,44 @@ async function acharAluno(db: SupabaseClient, email: string) {
   return (data?.id as string | undefined) ?? null
 }
 
-async function acharOuCriarAluno(db: SupabaseClient, email: string, nome?: string) {
+/**
+ * Senha inicial do aluno novo: os números do CPF (11) ou CNPJ (14) da compra.
+ * Documento ausente ou fora desse formato → sem senha inicial (o aluno entra pelo código por e-mail).
+ * O documento não é guardado em nenhuma tabela: vai direto para o login, que só armazena o hash.
+ */
+function senhaInicial(documento?: string) {
+  const numeros = (documento ?? '').replace(/\D/g, '')
+  return numeros.length === 11 || numeros.length === 14 ? numeros : null
+}
+
+async function acharOuCriarAluno(db: SupabaseClient, email: string, nome?: string, documento?: string) {
+  // Quem já é aluno mantém a senha que tem: uma nova compra não mexe no login.
   const existente = await acharAluno(db, email)
   if (existente) return existente
 
-  const { data, error } = await db.auth.admin.createUser({
-    email,
-    email_confirm: true,
-    user_metadata: nome ? { nome: nome.trim() } : undefined,
-  })
+  const criar = (senha: string | null) =>
+    db.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      ...(senha ? { password: senha } : {}),
+      user_metadata: { ...(nome ? { nome: nome.trim() } : {}), ...(senha ? { senha_inicial: true } : {}) },
+    })
+
+  const senha = senhaInicial(documento)
+  let { data, error } = await criar(senha)
   if (data?.user) return data.user.id
 
   // Dois avisos do mesmo comprador ao mesmo tempo (ex.: produto + order bump):
   // o outro acabou de criar o aluno.
   const criadoPorOutro = await acharAluno(db, email)
   if (criadoPorOutro) return criadoPorOutro
+
+  // A compra nunca fica sem liberar por causa da senha inicial (ex.: regra de senha
+  // do Supabase recusou o CPF): cria sem senha e o aluno entra pelo código por e-mail.
+  if (senha) {
+    ;({ data, error } = await criar(null))
+    if (data?.user) return data.user.id
+  }
 
   throw new Error(`Não foi possível criar o aluno: ${error?.message ?? 'erro desconhecido'}`)
 }

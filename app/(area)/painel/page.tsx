@@ -25,11 +25,17 @@ export default async function Painel() {
 
       {!aluno.temSenha && (
         <aside className="lembrete">
-          <p>
-            <strong>Crie uma senha</strong> e entre direto, sem esperar o código chegar no e-mail.
-          </p>
+          {aluno.comSenhaInicial ? (
+            <p>
+              <strong>Troque sua senha inicial.</strong> Hoje ela é o CPF da compra; crie uma que só você conheça.
+            </p>
+          ) : (
+            <p>
+              <strong>Crie uma senha</strong> e entre direto, sem esperar o código chegar no e-mail.
+            </p>
+          )}
           <Link href="/perfil#senha" className="btn btn-contorno">
-            Criar senha
+            {aluno.comSenhaInicial ? 'Trocar senha' : 'Criar senha'}
           </Link>
         </aside>
       )}

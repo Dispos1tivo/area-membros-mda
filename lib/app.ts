@@ -62,6 +62,26 @@ export const APPS: Record<string, AppDoConcurso> = {
       combo: 'https://pay.cakto.com.br/35exfsb',
     },
   },
+  PCMG: {
+    sigla: 'PCMG',
+    nome: 'PCMG',
+    banca: 'FGV',
+    telas: { inicio: 'pcmg-inicio.jpg', edital: 'pcmg-c-edital.jpg', simulados: 'pcmg-c-simulados.jpg' },
+    materialNoApp: true,
+    extras: [
+      ['144 flashcards', ' de revisão, com repetição espaçada'],
+      ['Mapas mentais interativos', ' de todas as matérias do edital, com modo revisão'],
+      ['Banco de questões comentadas', ': as 350 dos simulados, com filtro por matéria e caderno de erros'],
+      ['Simulados cronometrados', ', com cartão-resposta e nota por matéria'],
+      ['Treino para o TAF', ', com as metas de cada teste'],
+    ],
+    links: {
+      mensal: 'https://pay.cakto.com.br/36m86yq_1200766',
+      semestral: 'https://pay.cakto.com.br/36gppzb_1200761',
+      anual: 'https://pay.cakto.com.br/8a2kf9i_1200767',
+      combo: 'https://pay.cakto.com.br/n4p5hus',
+    },
+  },
 }
 
 /** Valores iguais em todos os concursos, já com a taxa de R$ 0,99 do checkout (menos a oferta do Combo). */

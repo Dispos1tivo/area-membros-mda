@@ -7,6 +7,7 @@ const ESTRELA = '0,-1 .2351,-.3236 .9511,-.309 .3804,.1236 .5878,.809 0,.4 -.587
 export const ESCUDOS: Record<string, string> = {
   PMMG: '/escudos/pmmg.svg',
   PMPE: '/escudos/pmpe.png',
+  PCMG: '/escudos/pcmg.png',
 }
 
 const TIPOS: Record<string, string> = {

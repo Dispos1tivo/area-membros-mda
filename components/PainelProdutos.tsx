@@ -1,13 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { Concurso } from '@/lib/concursos'
 import type { ProdutoDoAluno } from '@/lib/produtos'
 import { CardProduto } from './CardProduto'
 import { RadarEditais } from './RadarEditais'
 
-/** Radar de editais e listas de produtos do painel, com filtro por estado (e por concurso dentro do estado). */
-export function PainelProdutos({ produtos, concursos }: { produtos: ProdutoDoAluno[]; concursos: Concurso[] }) {
+type Props = {
+  produtos: ProdutoDoAluno[]
+  concursos: Concurso[]
+  /** Blocos que ficam logo abaixo de "Meus produtos" (continuar de onde parou, App de Estudos). */
+  children?: ReactNode
+}
+
+/**
+ * Painel: primeiro os produtos do aluno, depois o radar de editais e os outros produtos,
+ * estes com filtro por estado (e por concurso dentro do estado).
+ */
+export function PainelProdutos({ produtos, concursos, children }: Props) {
   const [uf, setUf] = useState<string | null>(null)
   const [sigla, setSigla] = useState<string | null>(null)
 
@@ -24,12 +34,9 @@ export function PainelProdutos({ produtos, concursos }: { produtos: ProdutoDoAlu
     if (p.concurso && !meuPorConcurso.has(p.concurso)) meuPorConcurso.set(p.concurso, p.nome)
   }
 
-  const liberados = visiveis.filter((p) => p.liberado)
   const bloqueados = visiveis.filter((p) => !p.liberado)
   const complementos = bloqueados.filter((p) => p.concurso && meuPorConcurso.has(p.concurso))
   const outros = bloqueados.filter((p) => !complementos.includes(p))
-
-  const filtrado = sigla ? `da ${sigla}` : `de ${estados.find(([u]) => u === uf)?.[1]}`
 
   function escolherEstado(novo: string | null) {
     setUf(novo)
@@ -38,6 +45,32 @@ export function PainelProdutos({ produtos, concursos }: { produtos: ProdutoDoAlu
 
   return (
     <>
+      <section className="secao" aria-labelledby="titulo-produtos">
+        <h2 id="titulo-produtos" className="secao-titulo">
+          Meus produtos
+        </h2>
+
+        {meus.length > 0 ? (
+          <div className="grade-produtos">
+            {meus.map((p) => (
+              <CardProduto key={p.id} produto={p} />
+            ))}
+          </div>
+        ) : (
+          <div className="vazio">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21 8 12 3 3 8l9 5 9-5Z" />
+              <path d="M3 8v8l9 5 9-5V8" />
+              <path d="M12 13v8" />
+            </svg>
+            <h3>Seus produtos vão aparecer aqui</h3>
+            <p>Assim que sua compra for confirmada, os materiais são liberados automaticamente nesta página.</p>
+          </div>
+        )}
+      </section>
+
+      {children}
+
       {estados.length > 1 && (
         <div className="filtros-bloco">
           <div className="filtros" role="group" aria-label="Filtrar por estado">
@@ -77,32 +110,6 @@ export function PainelProdutos({ produtos, concursos }: { produtos: ProdutoDoAlu
           <RadarEditais concursos={concursosVisiveis} produtos={produtos} />
         </section>
       )}
-
-      <section className="secao" aria-labelledby="titulo-produtos">
-        <h2 id="titulo-produtos" className="secao-titulo">
-          Meus produtos
-        </h2>
-
-        {liberados.length > 0 ? (
-          <div className="grade-produtos">
-            {liberados.map((p) => (
-              <CardProduto key={p.id} produto={p} />
-            ))}
-          </div>
-        ) : meus.length > 0 ? (
-          <p className="secao-sub">Você ainda não tem materiais {filtrado}.</p>
-        ) : (
-          <div className="vazio">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M21 8 12 3 3 8l9 5 9-5Z" />
-              <path d="M3 8v8l9 5 9-5V8" />
-              <path d="M12 13v8" />
-            </svg>
-            <h3>Seus produtos vão aparecer aqui</h3>
-            <p>Assim que sua compra for confirmada, os materiais são liberados automaticamente nesta página.</p>
-          </div>
-        )}
-      </section>
 
       {complementos.length > 0 && (
         <section className="secao" aria-labelledby="titulo-complementos">

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CapaProduto } from '@/components/CapaProduto'
 import { ItemMaterial } from '@/components/ItemMaterial'
+import { APPS } from '@/lib/app'
 import { getProdutoComMateriais } from '@/lib/produtos'
 import { dataBR, diasAte, textoFaltam } from '@/lib/prova'
 
@@ -22,6 +23,8 @@ export default async function PaginaProduto({ params }: Props) {
 
   const secoes = produto.liberado ? produto.secoes : []
   const dias = produto.data_prova ? diasAte(produto.data_prova) : null
+  // Combo cujo material também está na Biblioteca do App de Estudos
+  const app = produto.liberado && produto.tipo === 'combo' && produto.concurso ? APPS[produto.concurso] : undefined
 
   return (
     <>
@@ -41,6 +44,17 @@ export default async function PaginaProduto({ params }: Props) {
           )}
         </div>
       </section>
+
+      {app?.materialNoApp && (
+        <aside className="lembrete">
+          <p>
+            <strong>Este material também está no App de Estudos</strong>, com cronograma, questões corrigidas e revisões agendadas.
+          </p>
+          <Link href={`/app?concurso=${app.sigla}`} className="btn btn-contorno">
+            Conhecer o app
+          </Link>
+        </aside>
+      )}
 
       {!produto.liberado ? (
         <div className="vazio">

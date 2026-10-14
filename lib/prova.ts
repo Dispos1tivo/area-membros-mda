@@ -16,19 +16,6 @@ export function dataBR(data: string) {
   return `${dia}/${mes}/${ano}`
 }
 
-export type Prova = { concurso: string; data: string; dias: number }
-
-/** A prova mais próxima entre os produtos informados (ignora as que já passaram). */
-export function proximaProva(produtos: { concurso: string | null; data_prova: string | null }[]): Prova | null {
-  const provas = produtos
-    .filter((p) => p.concurso && p.data_prova)
-    .map((p) => ({ concurso: p.concurso!, data: p.data_prova!, dias: diasAte(p.data_prova!) }))
-    .filter((p) => p.dias >= 0)
-    .sort((a, b) => a.dias - b.dias)
-
-  return provas[0] ?? null
-}
-
 export function textoFaltam(dias: number) {
   if (dias === 0) return 'É hoje'
   return dias === 1 ? 'Falta 1 dia' : `Faltam ${dias} dias`

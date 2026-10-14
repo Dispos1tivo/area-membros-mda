@@ -358,27 +358,14 @@ h3 {
   text-transform: uppercase;
 }
 
-/* ---------- topo do painel: continuar + contagem ---------- */
-.inicio {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-  gap: 16px;
-}
-.inicio-so {
-  grid-template-columns: 1fr;
-}
-.continuar,
-.contagem {
-  padding: 20px 22px;
-  border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid var(--line);
-}
+/* ---------- continuar de onde parou ---------- */
 .continuar {
   display: flex;
   align-items: center;
   gap: 20px;
-  border-color: var(--y-a30);
+  padding: 20px 22px;
+  border: 1px solid var(--y-a30);
+  border-radius: var(--radius);
   background: linear-gradient(110deg, var(--y-a10), transparent 55%), var(--surface);
 }
 .continuar-info {
@@ -398,25 +385,6 @@ h3 {
 .continuar p a {
   color: var(--text-2);
   text-underline-offset: 3px;
-}
-.contagem {
-  display: grid;
-  align-content: center;
-  gap: 2px;
-}
-.contagem strong {
-  font: 800 clamp(30px, 4vw, 38px) / 1.05 var(--f-display);
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-}
-.contagem-data {
-  color: var(--text-3);
-  font-size: 14px;
-}
-@media (max-width: 720px) {
-  .inicio {
-    grid-template-columns: 1fr;
-  }
 }
 @media (max-width: 520px) {
   .continuar {
@@ -992,4 +960,301 @@ img.capa-escudo {
 }
 #senha {
   scroll-margin-top: 88px;
+}
+
+/* ---------- App de Estudos (destaque no painel e página /app) ---------- */
+.nav-novo {
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--y-500);
+  color: #111;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+@media (max-width: 640px) {
+  .nav a {
+    padding: 8px 4px;
+    font-size: 13px;
+  }
+  .nav-novo {
+    display: none;
+  }
+}
+a.filtro {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.filtro[aria-current='page'] {
+  background: var(--y-500);
+  border-color: var(--y-500);
+  color: #111;
+}
+/* moldura de celular para as capturas do app */
+.app-fone {
+  flex-shrink: 0;
+  width: min(230px, 60vw);
+  padding: 6px;
+  border: 1px solid var(--line-2);
+  border-radius: 26px;
+  background: #000;
+  overflow: hidden;
+}
+.app-fone img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+}
+/* no painel a captura aparece só até o "Plano de hoje" */
+.app-fone-corte {
+  width: 190px;
+  height: 250px;
+  padding-bottom: 0;
+  border-bottom: 0;
+  border-radius: 26px 26px 0 0;
+  align-self: flex-end;
+}
+.app-fone-corte img {
+  border-radius: 20px 20px 0 0;
+}
+.app-destaque {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 4vw, 40px);
+  padding: clamp(20px, 3vw, 28px) clamp(20px, 4vw, 36px) 0;
+  border: 1px solid var(--y-a30);
+  border-radius: var(--radius);
+  background: linear-gradient(110deg, var(--y-a10), transparent 60%), var(--surface);
+  overflow: hidden;
+}
+.app-destaque-info {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+  padding-bottom: clamp(20px, 3vw, 28px);
+}
+.app-destaque h2 {
+  font-size: clamp(22px, 3.4vw, 30px);
+}
+.app-destaque p,
+.app-hero p {
+  margin: 0;
+  color: var(--text-2);
+}
+.app-destaque .app-destaque-preco {
+  color: var(--text-3);
+  font-size: 14px;
+}
+.app-destaque-preco strong {
+  color: var(--y-300);
+}
+.app-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+@media (max-width: 640px) {
+  .app-destaque {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .app-destaque-info {
+    padding-bottom: 0;
+  }
+  .app-fone-corte {
+    align-self: center;
+    height: 200px;
+  }
+  .app-acoes .btn {
+    flex: 1 1 100%;
+  }
+}
+.app-hero {
+  display: flex;
+  align-items: center;
+  gap: clamp(24px, 5vw, 56px);
+}
+.app-hero-info {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+.app-hero h1 {
+  font-size: clamp(26px, 4.4vw, 40px);
+}
+.app-hero p {
+  font-size: 17px;
+}
+@media (max-width: 720px) {
+  .app-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .app-hero .app-fone {
+    align-self: center;
+  }
+}
+.app-telas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.app-telas-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.app-tela {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 10px 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.app-tela img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 4px;
+  border-radius: 8px;
+}
+.app-tela h3 {
+  padding: 0 4px;
+  font-size: 16px;
+}
+.app-tela p {
+  margin: 0;
+  padding: 0 4px;
+  color: var(--text-3);
+  font-size: 14px;
+}
+/* no celular as telas ficam lado a lado, deslizando (como o radar de editais) */
+@media (max-width: 640px) {
+  .app-telas,
+  .app-telas-3 {
+    display: flex;
+    margin: 0 calc(var(--gut) * -1);
+    padding: 0 var(--gut) 4px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .app-tela {
+    flex: 0 0 72%;
+    scroll-snap-align: center;
+  }
+}
+.app-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.app-lista li {
+  position: relative;
+  padding: 14px 16px 14px 42px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text-2);
+  font-size: 15px;
+}
+.app-lista li::before {
+  content: '✓';
+  position: absolute;
+  left: 16px;
+  color: var(--y-500);
+  font-weight: 800;
+}
+.app-lista strong {
+  color: var(--text);
+}
+.app-planos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.app-plano {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.app-plano-destaque {
+  border-color: var(--y-500);
+  background: linear-gradient(160deg, var(--y-a10), transparent 60%), var(--surface);
+}
+.app-plano h3 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 17px;
+}
+.app-selo {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--y-500);
+  color: #111;
+  font: 800 12px/1.2 var(--f-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.app-preco {
+  margin: 0;
+  font: 800 32px/1.1 var(--f-display);
+}
+.app-preco span {
+  color: var(--text-3);
+  font: 400 14px var(--f-body);
+}
+.app-preco s {
+  color: var(--text-4);
+  font-size: 18px;
+}
+.app-nota {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 13px;
+}
+.app-plano .btn {
+  margin-top: auto;
+}
+#planos {
+  scroll-margin-top: 88px;
+}
+.app-assinante {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  padding: 20px 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.app-assinante div {
+  flex: 1 1 320px;
+}
+.app-assinante h2 {
+  font-size: 20px;
+}
+.app-assinante p {
+  margin: 6px 0 0;
+  color: var(--text-3);
+  font-size: 15px;
 }

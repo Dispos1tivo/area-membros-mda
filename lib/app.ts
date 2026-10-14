@@ -30,7 +30,7 @@ export const APPS: Record<string, AppDoConcurso> = {
     telas: { inicio: 'pmpe-inicio.jpg', edital: 'pmpe-c-edital.jpg', simulados: 'pmpe-c-simulados.jpg' },
     materialNoApp: true,
     extras: [
-      ['140 flashcards', ' de revisão, com repetição espaçada'],
+      ['Flashcards', ' de revisão, com repetição espaçada'],
       ['Mapas mentais', ' de todas as matérias do edital'],
       ['Banco de questões comentadas', ': as 300 dos simulados, com filtro por matéria e caderno de erros'],
       ['Simulados cronometrados', ', com cartão-resposta e nota por matéria'],
@@ -48,7 +48,7 @@ export const APPS: Record<string, AppDoConcurso> = {
     nome: 'PMMG 2027',
     banca: 'CRS',
     telas: { inicio: 'inicio.jpg', edital: 'c-edital.jpg', simulados: 'c-simulados.jpg' },
-    materialNoApp: false,
+    materialNoApp: true,
     extras: [
       ['902 questões', ' com gabarito comentado, filtro por matéria e caderno de erros'],
       ['Flashcards', ' com repetição espaçada'],
@@ -69,7 +69,7 @@ export const APPS: Record<string, AppDoConcurso> = {
     telas: { inicio: 'pcmg-inicio.jpg', edital: 'pcmg-c-edital.jpg', simulados: 'pcmg-c-simulados.jpg' },
     materialNoApp: true,
     extras: [
-      ['144 flashcards', ' de revisão, com repetição espaçada'],
+      ['Flashcards', ' de revisão, com repetição espaçada'],
       ['Mapas mentais interativos', ' de todas as matérias do edital, com modo revisão'],
       ['Banco de questões comentadas', ': as 350 dos simulados, com filtro por matéria e caderno de erros'],
       ['Simulados cronometrados', ', com cartão-resposta e nota por matéria'],

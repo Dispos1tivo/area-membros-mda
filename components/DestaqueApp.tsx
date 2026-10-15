@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { APPS, APP_URL, PRECOS, type AppDoConcurso } from '@/lib/app'
+import { APPS, APP_URL, PRECOS, SIGLAS_DISPONIVEIS, type AppDoConcurso } from '@/lib/app'
 
 type Props = {
   /** Concurso que o aluno estuda (null: ainda não tem produto). */
@@ -23,14 +23,12 @@ export function DestaqueApp({ sigla, app, comCombo }: Props) {
       </div>
 
       <div className="app-destaque-info">
-        <span className="rotulo">{emBreve ? `App de Estudos · em breve para a ${sigla}` : `App de Estudos${app ? ` · ${app.nome}` : ''}`}</span>
-        <h2 id="titulo-app-destaque">
-          {emBreve ? `O App de Estudos está chegando para a ${sigla}` : organiza ? 'Seu Combo, organizado dia a dia' : 'Um plano de estudo para cada dia'}
-        </h2>
+        <span className="rotulo">App de Estudos</span>
+        <h2 id="titulo-app-destaque">A plataforma de estudos para concursos policiais e militares</h2>
         <p>
           {organiza
             ? 'As mesmas apostilas, simulados e bônus do seu Combo, dentro de uma plataforma que diz o que estudar hoje, corrige suas questões e agenda suas revisões.'
-            : 'A plataforma do Método da Aprovação diz o que estudar hoje, corrige suas questões e agenda suas revisões.'}
+            : 'Ela diz o que estudar hoje, corrige suas questões e agenda suas revisões.'}
         </p>
 
         <ul className="selos">
@@ -38,6 +36,10 @@ export function DestaqueApp({ sigla, app, comCombo }: Props) {
           <li>Questões e simulados</li>
           <li>Flashcards e mapas mentais</li>
         </ul>
+
+        <p className="app-destaque-preco">
+          Disponível para {SIGLAS_DISPONIVEIS}.{emBreve && ` Em breve para a ${sigla}.`}
+        </p>
 
         {app && comCombo && (
           <p className="app-destaque-preco">

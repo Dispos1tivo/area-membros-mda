@@ -3,6 +3,12 @@ import type { ProdutoDoAluno } from './produtos'
 /** Endereço do App de Estudos. O login de lá é próprio, separado do da área de membros. */
 export const APP_URL = 'https://app.mdaconcursos.com.br'
 
+/**
+ * Página de vendas geral do app: planos sem concurso definido (a pessoa escolhe o concurso no primeiro
+ * acesso ao app). Usada para quem ainda não tem produto de nenhum concurso na área.
+ */
+export const PLANOS_URL = 'https://planos.mdaconcursos.com.br'
+
 export type AppDoConcurso = {
   sigla: string
   nome: string
@@ -93,6 +99,15 @@ export const PRECOS = {
   parcelaAnual: '25,52',
   anualRiscado: '455,88',
   combo: { de: '147', por: '100' },
+}
+
+/** "PMPE, PMMG e PCMG" */
+export const SIGLAS_DISPONIVEIS = new Intl.ListFormat('pt-BR').format(Object.keys(APPS))
+
+/** Apps dos concursos em que o aluno tem algum produto liberado, sem repetir. */
+export function appsDoAluno(produtos: ProdutoDoAluno[]) {
+  const siglas = new Set(produtos.filter((p) => p.liberado && p.concurso && APPS[p.concurso]).map((p) => p.concurso!))
+  return [...siglas].map((s) => APPS[s])
 }
 
 /** Concurso que o aluno estuda (o primeiro com app; senão, o primeiro que ele tem) e o app desse concurso. */

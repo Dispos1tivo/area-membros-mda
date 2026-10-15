@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getAluno } from '@/lib/aluno'
-import { APPS, APP_URL, PRECOS, appDoAluno, temCombo } from '@/lib/app'
+import { APPS, APP_URL, PLANOS_URL, PRECOS, SIGLAS_DISPONIVEIS, appDoAluno, appsDoAluno, temCombo } from '@/lib/app'
 import { getProdutosDoAluno } from '@/lib/produtos'
 
 export const metadata: Metadata = { title: 'App de Estudos' }
@@ -18,10 +18,11 @@ export default async function PaginaApp({ searchParams }: Props) {
   const aluno = await getAluno()
   const [produtos, { concurso }] = await Promise.all([getProdutosDoAluno(aluno.id), searchParams])
 
-  // Vale o concurso pedido no endereço; senão, o que o aluno estuda; quem ainda não tem produto vê o primeiro.
-  const doAluno = appDoAluno(produtos)
-  const pedido = concurso ? APPS[concurso.toUpperCase()] : undefined
-  const app = pedido ?? doAluno.app ?? (doAluno.sigla ? null : Object.values(APPS)[0])
+  // Os planos são do concurso que o aluno já estuda (o do Combo dele). Quem estuda mais de um troca pelo endereço
+  // (?concurso=). Quem ainda não tem produto vai para a página de vendas geral e escolhe o concurso dentro do app.
+  const meusApps = appsDoAluno(produtos)
+  const pedido = concurso ? meusApps.find((a) => a.sigla === concurso.toUpperCase()) : undefined
+  const app = pedido ?? appDoAluno(produtos).app
   const vitrine = app ?? Object.values(APPS)[0]
 
   const comCombo = app ? temCombo(produtos, app.sigla) : false
@@ -39,19 +40,18 @@ export default async function PaginaApp({ searchParams }: Props) {
     <>
       <section className="app-hero">
         <div className="app-hero-info">
-          <span className="rotulo">App de Estudos{app ? ` · ${app.nome}` : ''}</span>
-          <h1>{organiza ? 'Você garantiu o material. Agora deixe o app organizar ele pra você.' : 'A plataforma de estudos do Método da Aprovação'}</h1>
+          <span className="rotulo">App de Estudos</span>
+          <h1>{organiza ? 'Você garantiu o material. Agora deixe o app organizar ele pra você.' : 'A plataforma de estudos para concursos policiais e militares'}</h1>
           <p>
             {organiza
               ? 'As mesmas apostilas, simulados e bônus do seu Combo, dentro de uma plataforma que diz o que estudar hoje, corrige suas questões e agenda suas revisões.'
               : 'Ela diz o que estudar hoje, corrige suas questões e agenda suas revisões. Funciona no navegador do celular e do computador, sem instalar nada.'}
           </p>
+          <p className="app-disponivel">Disponível para {SIGLAS_DISPONIVEIS}.</p>
           <div className="app-acoes">
-            {app && (
-              <a href="#planos" className="btn btn-ouro">
-                Assinar o app
-              </a>
-            )}
+            <a href={app ? '#planos' : PLANOS_URL} className="btn btn-ouro" {...(app ? {} : { target: '_blank', rel: 'noopener' })}>
+              Assinar o app
+            </a>
             <a href={APP_URL} className="btn btn-ghost" target="_blank" rel="noopener">
               Já sou assinante
             </a>
@@ -61,22 +61,6 @@ export default async function PaginaApp({ searchParams }: Props) {
           <img src={`/app/telas/${vitrine.telas.inicio}`} alt="Tela inicial do app, com o plano de hoje, a patente e as revisões do dia" width={750} height={1624} />
         </div>
       </section>
-
-      {!app && (
-        <aside className="lembrete">
-          <p>
-            <strong>O App de Estudos da {doAluno.sigla} está em preparação.</strong> Por enquanto ele está disponível para os concursos abaixo.
-          </p>
-        </aside>
-      )}
-
-      <nav className="filtros" aria-label="Concurso do app">
-        {Object.values(APPS).map((a) => (
-          <Link key={a.sigla} href={`/app?concurso=${a.sigla}`} className="filtro" aria-current={a === app ? 'page' : undefined} scroll={false}>
-            {a.nome}
-          </Link>
-        ))}
-      </nav>
 
       <section className="secao" aria-labelledby="titulo-telas">
         <h2 id="titulo-telas" className="secao-titulo">
@@ -92,6 +76,34 @@ export default async function PaginaApp({ searchParams }: Props) {
           ))}
         </div>
       </section>
+
+      <section className="secao" aria-labelledby="titulo-motiva">
+        <div>
+          <h2 id="titulo-motiva" className="secao-titulo">
+            Feito para você não parar
+          </h2>
+          <p className="secao-sub">Estudar todo dia sobe sua patente dentro do app.</p>
+        </div>
+        <div className="app-telas app-telas-3">
+          {MOTIVA.map(([arquivo, titulo, texto]) => (
+            <article key={titulo} className="app-tela">
+              <img src={`/app/telas/${arquivo}`} alt="" width={686} height={514} loading="lazy" />
+              <h3>{titulo}</h3>
+              <p>{texto}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {meusApps.length > 1 && (
+        <nav className="filtros" aria-label="Concurso do app">
+          {meusApps.map((a) => (
+            <Link key={a.sigla} href={`/app?concurso=${a.sigla}`} className="filtro" aria-current={a === app ? 'page' : undefined} scroll={false}>
+              App da {a.sigla}
+            </Link>
+          ))}
+        </nav>
+      )}
 
       {app && (
         <section className="secao" aria-labelledby="titulo-conteudo">
@@ -114,35 +126,17 @@ export default async function PaginaApp({ searchParams }: Props) {
         </section>
       )}
 
-      <section className="secao" aria-labelledby="titulo-motiva">
-        <div>
-          <h2 id="titulo-motiva" className="secao-titulo">
-            Feito para você não parar
-          </h2>
-          <p className="secao-sub">Estudar todo dia sobe sua patente dentro do app.</p>
-        </div>
-        <div className="app-telas app-telas-3">
-          {MOTIVA.map(([arquivo, titulo, texto]) => (
-            <article key={titulo} className="app-tela">
-              <img src={`/app/telas/${arquivo}`} alt="" width={686} height={514} loading="lazy" />
-              <h3>{titulo}</h3>
-              <p>{texto}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
       {app && (
         <section id="planos" className="secao" aria-labelledby="titulo-planos">
           <div>
             <h2 id="titulo-planos" className="secao-titulo">
-              Planos · {app.nome}
+              Planos · App da {app.sigla}
             </h2>
-            {comCombo && (
-              <p className="secao-sub">
-                Você tem o Combo da {app.sigla}: os R$ 47 que você pagou viram desconto no plano semestral.
-              </p>
-            )}
+            <p className="secao-sub">
+              {comCombo
+                ? `A assinatura já libera o app da ${app.sigla}, o concurso do seu Combo. E os R$ 47 que você pagou viram desconto no plano semestral.`
+                : `A assinatura já libera o app da ${app.sigla}, o concurso do seu material.`}
+            </p>
           </div>
 
           <div className="app-planos">
@@ -190,7 +184,9 @@ export default async function PaginaApp({ searchParams }: Props) {
             </article>
           </div>
 
-          <p className="secao-sub">Garantia de 14 dias. O pagamento é feito no checkout da Cakto, o mesmo do seu Combo.</p>
+          <p className="secao-sub">
+            Cada assinatura libera um concurso. Garantia de 14 dias. O pagamento é feito no checkout da Cakto, o mesmo do seu Combo.
+          </p>
         </section>
       )}
 

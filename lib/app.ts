@@ -72,7 +72,7 @@ export const APPS: Record<string, AppDoConcurso> = {
     sigla: 'PCMG',
     nome: 'PCMG',
     banca: 'FGV',
-    telas: { inicio: 'pcmg-inicio.jpg', edital: 'pcmg-c-edital.jpg', simulados: 'pcmg-c-simulados.jpg' },
+    telas: { inicio: 'pcmg-app-inicio.jpg', edital: 'pcmg-c-edital.jpg', simulados: 'pcmg-c-simulados.jpg' },
     materialNoApp: true,
     extras: [
       ['Flashcards', ' de revisão, com repetição espaçada'],

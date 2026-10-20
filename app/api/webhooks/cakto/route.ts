@@ -1,6 +1,7 @@
 import { timingSafeEqual } from 'node:crypto'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { NextResponse, type NextRequest } from 'next/server'
+import { after, NextResponse, type NextRequest } from 'next/server'
+import { enviarBoasVindas } from '@/lib/email/boasVindas'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 /**
@@ -10,6 +11,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
  *                        O aluno novo já nasce com uma senha inicial: o CPF
  *                        (ou CNPJ) da compra, só os números. Assim ele entra
  *                        mesmo que o e-mail de acesso não chegue.
+ *                        Depois de responder, manda o e-mail de boas-vindas
+ *                        (lib/email/boasVindas.ts); o resultado vai para o
+ *                        `detalhe` do aviso.
  * - refund / chargeback → revoga o acesso ao produto
  * - demais eventos      → só registra
  *
@@ -58,6 +62,7 @@ export async function POST(request: NextRequest) {
 
   let resultado = 'ignorado'
   let detalhe: string | null = null
+  let alunoLiberado: string | null = null
 
   try {
     if (LIBERAM.has(evento) || REVOGAM.has(evento)) {
@@ -83,6 +88,7 @@ export async function POST(request: NextRequest) {
         })
         if (error) throw new Error(error.message)
         resultado = 'acesso_liberado'
+        alunoLiberado = alunoId
       } else {
         const alunoId = await acharAluno(db, email)
         if (!alunoId) {
@@ -104,7 +110,7 @@ export async function POST(request: NextRequest) {
     detalhe = e instanceof Error ? e.message : String(e)
   }
 
-  await db.from('cakto_eventos').insert({
+  const { data: registro } = await db.from('cakto_eventos').insert({
     evento,
     resultado,
     pedido_id: dados.id ?? null,
@@ -114,7 +120,20 @@ export async function POST(request: NextRequest) {
     produto_nome: dados.product?.name ?? null,
     oferta_id: ofertaId,
     detalhe,
-  })
+  }).select('id').single()
+
+  if (alunoLiberado && email) {
+    const aluno = alunoLiberado
+    const para = email
+    after(async () => {
+      // Espera o aviso do order bump (chega junto) para mandar um e-mail só.
+      await new Promise((r) => setTimeout(r, 5000))
+      const envio = await enviarBoasVindas(db, aluno, para)
+      if (envio !== 'nada_a_enviar' && registro?.id) {
+        await db.from('cakto_eventos').update({ detalhe: `boas-vindas: ${envio}` }).eq('id', registro.id)
+      }
+    })
+  }
 
   return NextResponse.json({ ok: resultado !== 'erro', resultado }, { status: resultado === 'erro' ? 500 : 200 })
 }

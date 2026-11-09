@@ -11,7 +11,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
  */
 
 const AREA_URL = 'https://membros.mdaconcursos.com.br'
-const REMETENTE = 'Método da Aprovação <acesso@mdaconcursos.com.br>'
+const REMETENTE = 'MDA Concursos <acesso@mdaconcursos.com.br>'
 const JANELA_MINUTOS = 15
 
 export type ResultadoBoasVindas = 'enviado' | 'nada_a_enviar' | 'sem_chave' | `erro: ${string}`
@@ -48,7 +48,7 @@ export async function enviarBoasVindas(db: SupabaseClient, alunoId: string, emai
       body: JSON.stringify({
         from: REMETENTE,
         to: [email],
-        subject: 'Seu acesso está liberado · Método da Aprovação',
+        subject: 'Seu acesso está liberado · MDA Concursos',
         html: montarHtml({ primeiroNome, produtos, email, comoEntrar }),
         text: montarTexto({ primeiroNome, produtos, email, comoEntrar }),
       }),
@@ -89,7 +89,7 @@ function montarTexto({ primeiroNome, produtos, email, comoEntrar }: Dados) {
     'Se esquecer a senha, use "Esqueci minha senha" na tela de login.',
     '',
     'Bons estudos!',
-    'Equipe Método da Aprovação',
+    'Equipe MDA Concursos',
   ].join('\n')
 }
 
@@ -103,7 +103,7 @@ function montarHtml({ primeiroNome, produtos, email, comoEntrar }: Dados) {
 
   return `<div style="background:#09090B;padding:32px 16px;font-family:Segoe UI,Arial,sans-serif;color:#FAFAFA">
   <div style="max-width:480px;margin:0 auto;background:#141417;border:1px solid #26262B;border-radius:14px;padding:32px">
-    <p style="margin:0 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#F6C111;font-weight:700;text-align:center">Método da Aprovação</p>
+    <p style="margin:0 0 20px;text-align:center"><img src="${AREA_URL}/marca/mda-concursos-horizontal-fundo-escuro-1200.png" width="210" alt="MDA Concursos" style="display:inline-block;width:210px;height:auto;border:0"></p>
     <h1 style="margin:0 0 12px;font-size:22px;text-align:center">Seu acesso está liberado</h1>
     <p style="margin:0 0 20px;color:#A1A1AA;font-size:15px;line-height:1.5;text-align:center">Olá${primeiroNome ? `, ${escapar(primeiroNome)}` : ''}! Sua compra foi aprovada. Já está tudo na sua Área de Membros:</p>
 

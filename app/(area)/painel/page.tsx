@@ -21,7 +21,7 @@ export default async function Painel() {
     <>
       <section className="saudacao">
         <h1>{nome ? `Olá, ${nome}!` : 'Olá! Boas-vindas.'}</h1>
-        <p>Aqui ficam todos os seus materiais do Método da Aprovação.</p>
+        <p>Aqui ficam todos os seus materiais da MDA Concursos.</p>
       </section>
 
       {!aluno.temSenha && (

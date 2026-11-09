@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="28 12 184 184">
-  <path fill="#060607" stroke="#F6C111" stroke-width="10" d="M120 22 184 44V104c0 42-28 68-64 86-36-18-64-44-64-86V44z"/>
-  <polygon fill="#F6C111" transform="translate(120 98) scale(42)" points="0,-1 .2351,-.3236 .9511,-.309 .3804,.1236 .5878,.809 0,.4 -.5878,.809 -.3804,.1236 -.9511,-.309 -.2351,-.3236"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-5 0 80 80"><style>path{fill:#0B0B0C}@media (prefers-color-scheme:dark){path{fill:#F6C111}}</style><path fill-rule="evenodd" d="M0 0L12.5 0L32.5 20L52.5 0L65 0L65 47.5L32.5 80L0 47.5ZM10 9.5L10 21.5L32.5 44L55 21.5L55 9.5L32.5 32ZM10 33.5L10 45.5L32.5 68L55 45.5L55 33.5L32.5 56Z"/></svg>

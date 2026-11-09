@@ -19,9 +19,9 @@
   --y-a30: rgba(246, 193, 17, 0.32);
   --success: #3dd68c;
   --danger: #e05555;
-  --f-display: var(--font-saira-condensed), 'Arial Narrow', Impact, sans-serif;
+  --f-display: var(--font-zalando), var(--font-saira), 'Arial Black', sans-serif;
   --f-head: var(--font-saira), 'Segoe UI', system-ui, sans-serif;
-  --f-body: var(--font-inter), 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --f-body: var(--font-saira), 'Segoe UI', system-ui, -apple-system, sans-serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --gut: clamp(16px, 4vw, 40px);
   --radius: 14px;
@@ -208,9 +208,17 @@ h3 {
   text-align: center;
 }
 .login-caixa .logo {
+  display: block;
   width: min(260px, 80%);
-  height: auto;
   margin: 0 auto;
+}
+.login-caixa .logo .logo-inteira {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.logo .logo-simbolo {
+  display: none;
 }
 .login-caixa form {
   display: grid;
@@ -218,7 +226,7 @@ h3 {
 }
 .login-titulo {
   font-family: var(--f-display);
-  font-size: 30px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -255,9 +263,25 @@ h3 {
   min-height: 64px;
 }
 .topo .logo {
-  width: clamp(130px, 18vw, 170px);
-  height: auto;
+  display: block;
   flex-shrink: 0;
+}
+.topo .logo img {
+  display: block;
+  height: auto;
+}
+.topo .logo .logo-inteira {
+  width: 210px;
+}
+/* abaixo de 210 px a logo inteira fica pequena demais: no celular o topo mostra só o símbolo */
+@media (max-width: 640px) {
+  .topo .logo .logo-inteira {
+    display: none;
+  }
+  .topo .logo .logo-simbolo {
+    display: block;
+    width: 30px;
+  }
 }
 .nav {
   display: flex;
@@ -334,7 +358,7 @@ h3 {
   align-items: center;
   gap: 10px;
   font-family: var(--f-display);
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -353,7 +377,7 @@ h3 {
 }
 .rotulo {
   color: var(--y-500);
-  font: 800 13px/1.2 var(--f-display);
+  font: 800 10px/1.2 var(--f-display);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -514,7 +538,7 @@ h3 {
 .edital-faltam {
   margin: 0;
   color: var(--y-300);
-  font: 800 20px/1.1 var(--f-display);
+  font: 800 15px/1.1 var(--f-display);
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -720,7 +744,7 @@ span.btn[aria-disabled='true'] {
   right: -2cqw;
   bottom: -0.16em;
   z-index: -1;
-  font: 900 30cqw/1 var(--f-display);
+  font: 900 22cqw/1 var(--f-display);
   letter-spacing: 0.02em;
   color: transparent;
   -webkit-text-stroke: 1.5px color-mix(in srgb, var(--cor) 60%, transparent);
@@ -752,7 +776,7 @@ img.capa-escudo {
   border-radius: 999px;
   background: var(--y-500);
   color: #111;
-  font: 800 14px/1.2 var(--f-display);
+  font: 800 10.5px/1.2 var(--f-display);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1213,13 +1237,13 @@ a.filtro {
   border-radius: 999px;
   background: var(--y-500);
   color: #111;
-  font: 800 12px/1.2 var(--f-display);
+  font: 800 9px/1.2 var(--f-display);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .app-preco {
   margin: 0;
-  font: 800 32px/1.1 var(--f-display);
+  font: 800 24px/1.1 var(--f-display);
 }
 .app-preco span {
   color: var(--text-3);

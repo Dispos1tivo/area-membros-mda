@@ -273,6 +273,9 @@ h3 {
 .topo .logo .logo-inteira {
   width: 210px;
 }
+.topo .logo .logo-simbolo {
+  display: none;
+}
 /* abaixo de 210 px a logo inteira fica pequena demais: no celular o topo mostra só o símbolo */
 @media (max-width: 640px) {
   .topo .logo .logo-inteira {

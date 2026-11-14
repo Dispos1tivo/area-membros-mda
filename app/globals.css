@@ -733,6 +733,9 @@ span.btn[aria-disabled='true'] {
 .capa[data-concurso='PMESP'] {
   --cor: #c8102e;
 }
+.capa[data-concurso='PRF'] {
+  --cor: #1f4fa3;
+}
 .capa::before {
   content: '';
   position: absolute;

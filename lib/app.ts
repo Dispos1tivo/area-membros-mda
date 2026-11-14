@@ -88,6 +88,26 @@ export const APPS: Record<string, AppDoConcurso> = {
       combo: 'https://pay.cakto.com.br/n4p5hus',
     },
   },
+  PMESP: {
+    sigla: 'PMESP',
+    nome: 'PMESP 2027',
+    banca: 'Vunesp',
+    telas: { inicio: 'pmesp-app-inicio.jpg', edital: 'pmesp-c-edital.jpg', simulados: 'pmesp-c-simulados.jpg' },
+    materialNoApp: true,
+    extras: [
+      ['Flashcards', ' de revisão, com repetição espaçada'],
+      ['Mapas mentais interativos', ' de todas as matérias do edital, com modo revisão'],
+      ['Banco de questões comentadas', ': as 300 dos simulados, com filtro por matéria e caderno de erros'],
+      ['Simulados cronometrados', ', com cartão-resposta e nota por matéria'],
+      ['Treino para o TAF', ', com as metas de cada teste'],
+    ],
+    links: {
+      mensal: 'https://pay.cakto.com.br/ntxr662_1322107',
+      semestral: 'https://pay.cakto.com.br/39m5khy_1322112',
+      anual: 'https://pay.cakto.com.br/3cjmjyd_1322104',
+      combo: 'https://pay.cakto.com.br/36ahori',
+    },
+  },
 }
 
 /** Valores iguais em todos os concursos, já com a taxa de R$ 0,99 do checkout (menos a oferta do Combo). */
@@ -101,7 +121,7 @@ export const PRECOS = {
   combo: { de: '147', por: '100' },
 }
 
-/** "PMPE, PMMG e PCMG" */
+/** "PMPE, PMMG, PCMG e PMESP" */
 export const SIGLAS_DISPONIVEIS = new Intl.ListFormat('pt-BR').format(Object.keys(APPS))
 
 /** Apps dos concursos em que o aluno tem algum produto liberado, sem repetir. */

@@ -8,6 +8,7 @@ export const ESCUDOS: Record<string, string> = {
   PMMG: '/escudos/pmmg.svg',
   PMPE: '/escudos/pmpe.png',
   PCMG: '/escudos/pcmg.png',
+  PMESP: '/escudos/pmesp.png',
 }
 
 const TIPOS: Record<string, string> = {

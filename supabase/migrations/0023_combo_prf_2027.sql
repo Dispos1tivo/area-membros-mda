@@ -6,8 +6,7 @@
 -- último edital (Edital nº 1/2021, Cebraspe).
 -- PDFs no bucket "materiais", pastas nova-marca/prf-2027 e nova-marca/mapas-prf-2027
 -- (bônus e mapas já sem o texto escondido da PCMG). Pode rodar mais de uma vez sem duplicar.
--- Faltam as apostilas 5 (Geopolítica e Língua Estrangeira) e 9 (Direito Penal e Processual Penal):
--- quando chegarem, subir apostila-5.pdf e apostila-9.pdf e incluir as duas linhas comentadas abaixo.
+-- As apostilas 5 e 9 chegaram depois e entraram pela migration 0024.
 -- =====================================================================
 
 insert into public.concursos

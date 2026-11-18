@@ -40,6 +40,18 @@ body {
   padding: 0;
 }
 
+/* Celular: nada passa da largura da tela e a página não afasta nem amplia.
+   html com hidden vale para a janela; body com clip não vira área de rolagem (position: sticky continua funcionando). */
+html {
+  overflow-x: hidden;
+  touch-action: pan-x pan-y;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  overflow-x: clip;
+}
+
 body {
   min-height: 100dvh;
   background: var(--bg);
@@ -468,7 +480,7 @@ h3 {
 }
 .radar {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
   gap: 16px;
 }
 .edital {
@@ -622,7 +634,7 @@ h3 {
 /* ---------- produtos ---------- */
 .grade-produtos {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
   gap: 16px;
 }
 .produto {
@@ -1142,7 +1154,7 @@ a.filtro {
 }
 .app-telas {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
   gap: 16px;
 }
 .app-telas-3 {
@@ -1194,7 +1206,7 @@ a.filtro {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 10px;
 }
 .app-lista li {
@@ -1218,7 +1230,7 @@ a.filtro {
 }
 .app-planos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 16px;
 }
 .app-plano {

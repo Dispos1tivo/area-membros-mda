@@ -18,8 +18,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
+// Celular: zoom travado em 100% (a página não afasta nem amplia)
 export const viewport: Viewport = {
   themeColor: '#09090B',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -259,6 +259,30 @@ h3 {
   font-size: 13px;
 }
 
+/* ---------- links da privacidade e dos termos ---------- */
+.links-legais {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  font-size: 13px;
+}
+.links-legais a {
+  color: var(--text-4);
+  text-decoration: none;
+}
+.links-legais a:hover {
+  color: var(--y-500);
+}
+.rodape-area {
+  padding-top: 20px;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+}
+.login-legais {
+  margin-top: 12px;
+}
+
 /* ---------- topo da área ---------- */
 .topo {
   position: sticky;

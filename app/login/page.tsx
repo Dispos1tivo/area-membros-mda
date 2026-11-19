@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Logo } from '@/components/Logo'
 import { caminhoSeguro } from '@/lib/redirect'
 import { FormLogin } from './FormLogin'
+import { LinksLegais } from '@/components/LinksLegais'
 
 export const metadata: Metadata = { title: 'Entrar' }
 
@@ -24,6 +25,7 @@ export default async function PaginaLogin({
           <FormLogin next={caminhoSeguro(next)} erroInicial={erro ? ERROS[erro] : undefined} />
         </div>
         <p className="login-rodape">Dúvidas com o acesso? Fale com o nosso suporte.</p>
+        <LinksLegais className="login-legais" />
       </div>
     </main>
   )

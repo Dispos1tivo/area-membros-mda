@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 import { Nav } from '@/components/Nav'
 import { getAluno } from '@/lib/aluno'
+import { LinksLegais } from '@/components/LinksLegais'
 
 /** Moldura de todas as páginas logadas: topo com logo, menu e botão de sair. */
 export default async function LayoutArea({ children }: { children: React.ReactNode }) {
@@ -22,6 +23,9 @@ export default async function LayoutArea({ children }: { children: React.ReactNo
         </div>
       </header>
       <main className="container conteudo">{children}</main>
+      <footer className="container rodape-area">
+        <LinksLegais />
+      </footer>
     </>
   )
 }

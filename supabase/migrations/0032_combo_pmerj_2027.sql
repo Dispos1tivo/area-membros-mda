@@ -50,12 +50,12 @@ select
   'mapas-mentais-pmerj-2027',
   'Combo de Mapas Mentais PMERJ 2027',
   'PMERJ 2027',
-  '64 mapas mentais das matérias do edital de Soldado da PMERJ e da redação, para revisar o conteúdo.',
+  '87 mapas mentais das matérias do edital de Soldado da PMERJ e da redação, para revisar o conteúdo.',
   'https://pay.cakto.com.br/32nyaha',
   '5c329e06-7f56-444e-9c12-a0e60391c339',
   12,
   'mapas',
-  '{"64 mapas mentais","8 PDFs"}'::text[],
+  '{"87 mapas mentais","8 PDFs"}'::text[],
   c.id
 from public.concursos c
 where c.sigla = 'PMERJ'

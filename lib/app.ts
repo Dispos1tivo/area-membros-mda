@@ -128,6 +128,27 @@ export const APPS: Record<string, AppDoConcurso> = {
       combo: 'https://pay.cakto.com.br/speiyzc',
     },
   },
+  PMERJ: {
+    sigla: 'PMERJ',
+    nome: 'PMERJ 2027',
+    banca: 'IBADE',
+    telas: { inicio: 'pmerj-app-inicio.jpg', edital: 'pmerj-c-edital.jpg', simulados: 'pmerj-c-simulados.jpg' },
+    materialNoApp: true,
+    extras: [
+      ['Flashcards', ' de revisão, com repetição espaçada'],
+      ['Mapas mentais interativos', ' de todas as matérias do edital, com modo revisão'],
+      ['Banco de questões comentadas', ': as 250 dos simulados, com filtro por matéria e caderno de erros'],
+      ['Simulados cronometrados', ', com cartão-resposta e nota por matéria'],
+      ['Redação corrigida pela equipe', ', nos critérios da IBADE'],
+      ['Treino para o TAF', ', com as metas de cada teste'],
+    ],
+    links: {
+      mensal: 'https://pay.cakto.com.br/zxuffrg',
+      semestral: 'https://pay.cakto.com.br/ecbkwxk',
+      anual: 'https://pay.cakto.com.br/7xuvr28',
+      combo: 'https://pay.cakto.com.br/3bn2vm2',
+    },
+  },
 }
 
 /** Valores iguais em todos os concursos, já com a taxa de R$ 0,99 do checkout (menos a oferta do Combo). */

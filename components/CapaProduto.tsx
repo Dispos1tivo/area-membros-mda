@@ -11,6 +11,7 @@ export const ESCUDOS: Record<string, string> = {
   PMESP: '/escudos/pmesp.png',
   PRF: '/escudos/prf.png',
   PMERJ: '/escudos/pmerj.png',
+  GMF: '/escudos/gmf.png',
 }
 
 const TIPOS: Record<string, string> = {
